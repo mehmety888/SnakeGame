@@ -14,23 +14,94 @@ Renderer::Renderer(const std::size_t screen_width,
     std::cerr << "SDL could not initialize.\n";
     std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
   }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+  //Initialization flag
+  bool success_1 = true;
+  SDL_Window* gWindow = nullptr;
+  SDL_Surface* gScreenSurface = nullptr;
 
-  // Create Window
-  sdl_window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_CENTERED,
-                                SDL_WINDOWPOS_CENTERED, screen_width,
-                                screen_height, SDL_WINDOW_SHOWN);
-
-  if (nullptr == sdl_window) {
-    std::cerr << "Window could not be created.\n";
-    std::cerr << " SDL_Error: " << SDL_GetError() << "\n";
+  // //Initialize SDL
+  if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+  {
+      std::cout<<"SDL could not initialize! SDL_Error: "<< SDL_GetError() <<std::endl;
+      success_1 = false;
+  }
+  else
+  {
+      //Create window
+      gWindow = SDL_CreateWindow( "Snake Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN );
+      if( gWindow == NULL )
+      {
+          std::cout<<"Window could not be created! SDL_Error:"<<SDL_GetError()<<std::endl;
+          success_1 = false;
+      }
+      else
+      {
+          //Get window surface
+          gScreenSurface = SDL_GetWindowSurface( gWindow );
+      }
   }
 
-  // Create renderer
-  sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
-  if (nullptr == sdl_renderer) {
-    std::cerr << "Renderer could not be created.\n";
-    std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
+  //Loading success flag
+  bool success_2 = true;
+  SDL_Surface* gHelloWorld = nullptr;
+  //Load splash image
+  gHelloWorld = SDL_LoadBMP("assets/mamba.bmp");
+  if( gHelloWorld == NULL )
+  {
+      std::cout<<"Unable to load image"<<SDL_GetError()<<std::endl;
+      success_2 = false;
   }
+
+  if(!success_1)
+  {
+      std::cout<<"Failed to initialize!\n";
+  }
+  else
+  {
+      //Load media
+      if(!success_2)
+      {
+          std::cout<<"Failed to load media!\n";
+      }
+      else
+      {
+          //Apply the image
+          SDL_BlitSurface( gHelloWorld, NULL, gScreenSurface, NULL );
+          //Update the surface
+          SDL_UpdateWindowSurface( gWindow );
+          //Wait two seconds
+          //SDL_Delay( 2000 );
+      }
+  }
+    SDL_Delay( 4000 );
+    // Deallocate surface
+    SDL_FreeSurface( gHelloWorld );
+    gHelloWorld = NULL;
+
+    //Destroy window
+    SDL_DestroyWindow( gWindow );
+    gWindow = NULL;
+
+    //Quit SDL subsystems
+    SDL_Quit();
+//////////////////////////////////////////////////////////////////////////////////////////////////
+  // // Create Window
+  // sdl_window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_CENTERED,
+  //                               SDL_WINDOWPOS_CENTERED, screen_width,
+  //                               screen_height, SDL_WINDOW_SHOWN);
+
+  // if (nullptr == sdl_window) {
+  //   std::cerr << "Window could not be created.\n";
+  //   std::cerr << " SDL_Error: " << SDL_GetError() << "\n";
+  // }
+
+  // // Create renderer
+  // sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+  // if (nullptr == sdl_renderer) {
+  //   std::cerr << "Renderer could not be created.\n";
+  //   std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
+  // }
 }
 
 Renderer::~Renderer() {
